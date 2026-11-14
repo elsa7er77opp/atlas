@@ -1,0 +1,23 @@
+# secrets - never commit
+.env
+infra/mosquitto/certs/*.key
+infra/mosquitto/certs/*.crt
+infra/mosquitto/config/passwd
+infra/mosquitto/data/
+infra/mosquitto/log/
+# python
+__pycache__/
+*.pyc
+.venv/
+# data volumes
+pgdata/
+infra/mosquitto/certs/*.srl
+infra/mosquitto/certs/*.csr
+*.bak
+firmware/atlas-node/include/atlas_config.h
+firmware/atlas-node/include/ca_cert.h
+.pio/
+infra/mosquitto/certs/superseded/
+*.bak-*
+*.before-*
+*.pre-*

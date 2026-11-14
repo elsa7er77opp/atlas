@@ -1,0 +1,4 @@
+subjectAltName = DNS:atlas-broker, DNS:localhost, IP:172.20.10.10, IP:127.0.0.1
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth

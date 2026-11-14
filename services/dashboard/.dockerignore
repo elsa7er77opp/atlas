@@ -1,0 +1,13 @@
+# Project Atlas - dashboard build context exclusions
+# AT-26-L1-002
+#
+# node_modules is the important line. Without it Docker copies the host's
+# installed tree into the build context - hundreds of megabytes, sent to the
+# daemon on every build, only to be overwritten by `npm ci` moments later.
+
+node_modules
+dist
+.git
+.env
+.env.*
+*.log

@@ -1,0 +1,10 @@
+/*
+ * Vite's starter stylesheet centres #root in a narrow column, which suits a
+ * landing page and not a monitoring console. Tables and time-series charts
+ * need the full viewport width, so the constraint is removed here rather than
+ * fought with overrides in App.css.
+ */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

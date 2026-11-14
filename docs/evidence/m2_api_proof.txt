@@ -1,0 +1,75 @@
+Project Atlas - API verification    2026-08-12T14:16:49+03:00
+Target: http://127.0.0.1:8000
+
+FR-22  User authentication
+  PASS  no token on a protected endpoint               401 (expected 401)  -- authentication is required, not optional
+  PASS  malformed bearer token                         401 (expected 401)  -- signature is verified
+  PASS  wrong password                                 401 (expected 401)  -- credentials are checked
+  PASS  nonexistent account                            401 (expected 401)  -- identical reply to a wrong password: no enumeration oracle
+  PASS  valid credentials issue a token pair           200 (expected 200)  -- the issued token is accepted
+
+FR-24  Role-based permissions
+  PASS  viewer reads devices                           200 (expected 200)  -- the viewer floor is honoured
+  PASS  viewer registers a device                      403 (expected 403)  -- administrator floor enforced on the endpoint
+  PASS  viewer changes a threshold                     403 (expected 403)  -- operator floor enforced on the endpoint
+  PASS  viewer reads the audit trail                   403 (expected 403)  -- the trail is not readable by those it records
+  PASS  viewer acknowledges an alarm                   403 (expected 403)  -- acknowledgement is an operator action
+
+FR-19  Configuration changes recorded with previous and new values
+  previous max_value: 1250.0   requested: 1250
+  audit entry:
+    [
+        {
+            "id": 37,
+            "user_id": 1,
+            "username": "admin",
+            "action": "threshold.update",
+            "entity_type": "threshold",
+            "entity_id": 1,
+            "before": {
+                "metric": "current_ma",
+                "z_sigma": 3.0,
+                "z_window": 300,
+                "device_id": 1,
+                "max_value": 1250.0,
+                "min_value": 50.0,
+                "confirm_samples": 3,
+                "max_rate_of_change": 200.0
+            },
+            "after": {
+                "metric": "current_ma",
+                "z_sigma": 3.0,
+                "z_window": 300,
+                "device_id": 1,
+                "max_value": 1250.0,
+                "min_value": 50.0,
+                "confirm_samples": 3,
+                "max_rate_of_change": 200.0
+            },
+            "ip_address": "172.18.0.1",
+            "occurred_at": "2026-08-12T14:16:49.692670+03:00"
+        }
+    ]
+
+FR-23  Password protection
+  users table, inspected directly:
+             username         |              hash_prefix               
+    --------------------------+----------------------------------------
+     admin                    | $argon2id$v=19$m=65536,t=3,p=4$4xT21bn
+     verify_viewer            | $argon2id$v=19$m=65536,t=3,p=4$vorF8LN
+     verify_viewer_1786533294 | $argon2id$v=19$m=65536,t=3,p=4$fx3aQfI
+     verify_viewer_1786533295 | $argon2id$v=19$m=65536,t=3,p=4$785ShAC
+     verify_viewer_1786533409 | $argon2id$v=19$m=65536,t=3,p=4$JEaDCTX
+    (5 rows)
+    
+  every hash begins $argon2id$v=19$m=65536,t=3,p=4 - no reversible form stored.
+
+FR-26  Protection against unauthorised access
+  login rate limit:   PASS  sixth consecutive failure                      429 (expected 429)  -- guessing is throttled, FR-26
+
+Refresh token rotation and reuse detection
+  PASS  rotation issues a different token              different (expected different)  -- single-use refresh tokens
+  PASS  replaying the old refresh token                401 (expected 401)  -- reuse is detected and the family revoked
+
+-----------------------------------------------------------
+passed 13   failed 0
